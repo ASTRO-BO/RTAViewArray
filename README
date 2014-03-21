@@ -1,12 +1,9 @@
 The RTAViewer visualize the triggered telescope.
 
 Requires the following python packages in order to run:
-  root-python
   numpy
   chaco
   pyfits
-
-You need to download a root file with telescopes informations and place within the RTAViewer.py folder. It must be named Aar.prod2.a2.root in order to work.
 
 To launch the viewer just run:
   $ ./RTAViewer

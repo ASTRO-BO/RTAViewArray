@@ -16,7 +16,6 @@
 ############################################################################
 
 # load modules
-from ROOT import TFile, gDirectory
 import pyfits
 import Ice
 import numpy as np
@@ -34,10 +33,6 @@ from chaco.tools.api import PanTool, ZoomTool, LegendTool, \
 Ice.loadSlice('RTAViewer.ice')
 Ice.updateModules()
 import CTA
-
-# open the root file
-myfile = TFile('./Aar.prod2.a2.root' )
-myfile.ls()
 
 # open the fits file
 hdulist_conf = pyfits.open('./PROD2_telconfig.fits.gz')
@@ -112,11 +107,8 @@ class ViewerI(CTA.RTAViewer):
     def __init__(self, viewer):
         CTA.RTAViewer.__init__(self)
         self._viewer = viewer
-        self.dst_tree = gDirectory.Get('dst')
-        self.dst_tree.GetEntriesFast()
 
     def update(self, telescopes, evtnum, current=None):
-        tel_trig_id = self._get_trig_tel()
         self._viewer.jtrig += 1
 
         LSTindex = []
@@ -130,8 +122,8 @@ class ViewerI(CTA.RTAViewer):
         TrigSTelX = []
         TrigSTelY = []
 	         
-        for jtrig_tel in xrange(len(tel_trig_id)):
-            where_tel = np.where(TelID == tel_trig_id[jtrig_tel])
+        for jtrig_tel in xrange(len(telescopes)):
+            where_tel = np.where(TelID == telescopes[jtrig_tel])
             trig_tel_type = TelType[where_tel]
             if (trig_tel_type == LType):
                  tempTelX = TelX[where_tel]
@@ -240,48 +232,6 @@ class ViewerI(CTA.RTAViewer):
             self._viewer.rSSTdata[0].marker_size = 4
             self._viewer.rSSTdata[0].line_width = 0
             self._viewer.plotSSTtrig.request_redraw()
-
-    def _get_trig_tel(self):
-    	nb = self.dst_tree.GetEntry(self._viewer.jtrig)
-
-    	print 'jtrig', self._viewer.jtrig
-    	 
-    	# N entries = N trig
-    	eventID = self._viewer.jtrig  # event ID starting from 0 (0,1,2,...)
-    	runNumber = self.dst_tree.runNumber
-    	eventNumber = self.dst_tree.eventNumber
-    	eventtype = self.dst_tree.eventtype
-    	ntel_dst = self.dst_tree.ntel
-    	ltrig = self.dst_tree.ltrig
-    	ntrig = self.dst_tree.ntrig
-    	ntel_data = self.dst_tree.ntel_data
-    	
-    	# 2550 elements 
-    	ltrig_list = list(self.dst_tree.ltrig_list)
-    	LTtime = list(self.dst_tree.LTtime)
-    	L2TrigType = list(self.dst_tree.L2TrigType)
-    	tel_data = list(self.dst_tree.tel_data)
-    	tel_zero_suppression = list(self.dst_tree.tel_zero_suppression)
-    	nL1trig = list(self.dst_tree.nL1trig)
-    	numSamples = list(self.dst_tree.numSamples)
-   
-    	NTel_trig = self.dst_tree.ntel_data # Number of triggered telescopes
-    	
-    	NTel_trig_id = tel_data  # ID of triggered telescopes
-    	print 'Number of triggered telescopes:', NTel_trig
-    	print 'ID of triggered telescopes:', NTel_trig_id
-    	
-    	NPixel_trig = np.zeros(NTel_trig) # Number of pixel of the triggered telescopes
-    	TelType_trig = np.zeros(NTel_trig) # Array of triggered telescope types
-    	
-    	for jtel_trig in xrange(NTel_trig):
-    		where_NPixel_trig = np.where(np.array(TelID) == NTel_trig_id[jtel_trig])
-    		NPixel_trig[jtel_trig] = int(NPixel[where_NPixel_trig])
-    	
-    	print 'NPixel of triggered telescopes:', NPixel_trig
-    	print 'NSamples of triggered telescopes:', numSamples
-    	
-    	return NTel_trig_id
 
 class ChacoViewer(HasTraits, Ice.Application):
     plot = Instance(Component)
