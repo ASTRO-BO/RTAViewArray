@@ -109,7 +109,7 @@ import CTA
 size=(700,700)
 title="CTA Quick Look"
 
-class ViewerI(CTA.Viewer):
+class ViewerI(CTA.RTAViewer):
     def __init__(self, viewer):
         super(ViewerI, self).__init__(**traits)
         self._viewer = viewer
