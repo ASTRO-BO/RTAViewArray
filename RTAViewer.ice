@@ -20,7 +20,7 @@ module CTA
 
 sequence<int> IntSeq;
 
-interface Viewer
+interface RTAViewer
 {
     idempotent void update(IntSeq telescopes, int evtnum);
 };

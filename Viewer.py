@@ -101,7 +101,7 @@ SSTelY = TelY[np.where(TelType == SType)]
  
 import sys, traceback, time, Ice
 
-Ice.loadSlice('Viewer.ice')
+Ice.loadSlice('RTAViewer.ice')
 Ice.updateModules()
 import CTA
 
