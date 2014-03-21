@@ -1,47 +1,34 @@
 #!/usr/bin/env python
 
+# load modules
+from ROOT import TFile, gDirectory
+import pyfits
+import Ice
+import numpy as np
+import sys
+
 # Chaco modules 
 from chaco.api import ArrayPlotData, Plot, OverlayPlotContainer, Legend, PlotGraphicsContext
 from enable.api import Window, Component, ComponentEditor
 from traits.api import HasTraits, Instance
-from traitsui.api import Item, Group, View, Handler
-from pyface.timer.api import Timer
-
+from traitsui.api import Item, Group, View
 from chaco.tools.api import PanTool, ZoomTool, LegendTool, \
         TraitsTool, DragZoom
-from chaco.api import create_line_plot, add_default_axes, \
-        add_default_grids, OverlayPlotContainer, PlotLabel, \
-        create_scatter_plot, Legend
 
-from enable.example_support import DemoFrame, demo_main
+# Load slice definition
+Ice.loadSlice('RTAViewer.ice')
+Ice.updateModules()
+import CTA
 
-## FIXME: remove this?
-#from ROOT import TFile, gDirectory
-import numpy as np
-#import matplotlib.pyplot as plt
-import pyfits
-import os
+# open the root file
+myfile = TFile('./Aar.prod2.a2.root' )
+myfile.ls()
 
-#########################################################################
-## TODO: move this block to the __main__ and pass variables to functions..
-# open the file
-
-## FIXME: remove this?
-#home_dir = os.getenv("HOME")
-#ctarta = os.getenv("CTARTA")
-
-## FIXME: remove lot of not used functions?
-#myfile = TFile('./Aar.prod2.a2.root' )
-#myfile.ls()
-
+# open the fits file
 hdulist_conf = pyfits.open('./PROD2_telconfig.fits.gz')
 datal0_conf = hdulist_conf[1].data
 colsl0_conf = hdulist_conf[1].columns
 namesl0_field = colsl0_conf.names
-
-#datal1_conf = hdulist_conf[2].data
-#colsl1_conf = hdulist_conf[2].columns
-#namesl1_field = colsl1_conf.names
 
 TelID = datal0_conf.field(namesl0_field[1])
 TelType = datal0_conf.field(namesl0_field[2])
@@ -64,6 +51,10 @@ NPixel = datal0_conf.field(namesl0_field[11])
 #NTubesOFF = datal0_conf.field(namesl0_field[19])
 #NMirrors = datal0_conf.field(namesl0_field[20])
 #MirrorArea = datal0_conf.field(namesl0_field[21])
+
+#datal1_conf = hdulist_conf[2].data
+#colsl1_conf = hdulist_conf[2].columns
+#namesl1_field = colsl1_conf.names
 
 #XTubeMM = datal1_conf.field(namesl1_field[3])
 #YTubeMM = datal1_conf.field(namesl1_field[4])
@@ -97,13 +88,6 @@ MSTelY = TelY[np.where(TelType == MType)]
 SSTelID = TelID[np.where(TelType == SType)]
 SSTelX = TelX[np.where(TelType == SType)]
 SSTelY = TelY[np.where(TelType == SType)]
-#########################################################################
- 
-import sys, traceback, time, Ice
-
-Ice.loadSlice('RTAViewer.ice')
-Ice.updateModules()
-import CTA
 
 # Setting the configuration and starting variables
 size=(700,700)
@@ -111,12 +95,13 @@ title="CTA Quick Look"
 
 class ViewerI(CTA.RTAViewer):
     def __init__(self, viewer):
-        super(ViewerI, self).__init__(**traits)
+        CTA.RTAViewer.__init__(self)
         self._viewer = viewer
         self.dst_tree = gDirectory.Get('dst')
+        self.dst_tree.GetEntriesFast()
 
     def update(self, telescopes, evtnum, current=None):
-        tel_trig_id = _get_trig_tel()
+        tel_trig_id = self._get_trig_tel()
         self._viewer.jtrig += 1
 
         LSTindex = []
@@ -241,7 +226,7 @@ class ViewerI(CTA.RTAViewer):
             self._viewer.rSSTdata[0].line_width = 0
             self._viewer.plotSSTtrig.request_redraw()
 
-    def _get_trig_tel():
+    def _get_trig_tel(self):
     	nb = self.dst_tree.GetEntry(self._viewer.jtrig)
 
     	print 'jtrig', self._viewer.jtrig
@@ -287,19 +272,21 @@ class ChacoViewer(HasTraits, Ice.Application):
     plot = Instance(Component)
 
     traits_view = View(
-                    Group(
-                          Item('plot', editor=ComponentEditor(size=size),
-                               show_label=False),
-                          orientation = "vertical"),
-                       resizable=True, title=title,
-                       width=size[0], height=size[1])
+                  Group(
+                  Item('plot', editor=ComponentEditor(size=size),
+                  show_label=False),
+                  orientation = "vertical"),
+                  resizable=True, title=title,
+                  width=size[0], height=size[1])
 
     def __init__(self, **traits):
-        super(ChacoViewer, self).__init__(**traits)
+        Ice.Application.__init__(self)
+        HasTraits.__init__(self,**traits)
 
         plots = {}
         container = OverlayPlotContainer(padding = 50, fill_padding = True,
                                          bgcolor = "lightgray", use_backbuffer=True)
+        self.jtrig = 0
 
         # Plot all telescopes
         self.LSTdefault = ArrayPlotData()
@@ -402,20 +389,23 @@ class ChacoViewer(HasTraits, Ice.Application):
         #gc.save(filename)
 
         self.plot = container
+        print "end init"
 
     def run(self, args):
+        print "running!"
         if len(args) > 1:
             print(self.appName() + ": too many arguments")
             return 1
 
-        adapter = self.communicator().createObjectAdapter("Viewer")
+        adapter = self.communicator().createObjectAdapter("RTAViewer")
         adapter.add(ViewerI(self), self.communicator().stringToIdentity("viewer"))
         adapter.activate()
-        self.communicator().waitForShutdown()
+
+		# start the chaco draw loop
+        self.configure_traits()
+
         return 0
 
 if __name__ == "__main__":
     viewer = ChacoViewer()
-    viewer.configure_traits()
-    sys.stdout.flush()
     sys.exit(viewer.main(sys.argv, "config.server"))
