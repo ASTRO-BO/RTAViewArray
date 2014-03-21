@@ -1,5 +1,20 @@
 #!/usr/bin/env python
 
+############################################################################
+#    begin                : Mar 21 2014
+#    copyright            : (C) 2014 Valentina Fioretti, Andrea Zoli
+#    email                : fioretti@iasfbo.inaf.it, zoli@iasfbo.inaf.it
+############################################################################
+
+############################################################################
+#                                                                          #
+#   This program is free software for non commercial purpose               #
+#   and for public research institutes; you can redistribute it and/or     #
+#   modify it under the terms of the GNU General Public License.           #
+#   For commercial purpose see appropriate license terms                   #
+#                                                                          #
+############################################################################
+
 # load modules
 from ROOT import TFile, gDirectory
 import pyfits
