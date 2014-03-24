@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>4465FCB4-F168-416C-BE3F-FF1A9A63BF14</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RTAViewArray</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8A69FFA7-FCB0-4650-A7BB-CC6768BFA95D</key>
+		<string>ssh://github.com/ASTRO-BO/RTAViewArray.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>RTAViewArray/RTAViewArray.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8A69FFA7-FCB0-4650-A7BB-CC6768BFA95D</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/ASTRO-BO/RTAViewArray.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8A69FFA7-FCB0-4650-A7BB-CC6768BFA95D</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8A69FFA7-FCB0-4650-A7BB-CC6768BFA95D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>RTAViewArray</string>
+		</dict>
+	</array>
+</dict>
+</plist>
