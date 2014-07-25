@@ -20,6 +20,7 @@ import pyfits
 import Ice
 import numpy as np
 import sys
+import os
 
 # Chaco modules 
 from chaco.api import ArrayPlotData, Plot, OverlayPlotContainer, Legend, PlotGraphicsContext
@@ -30,12 +31,15 @@ from chaco.tools.api import PanTool, ZoomTool, LegendTool, \
         TraitsTool, DragZoom
 
 # Load slice definition
-Ice.loadSlice('RTAViewer.ice')
+confdir=os.environ["CTARTA"]+"/share/viewer/"
+
+Ice.loadSlice(confdir+"RTAViewer.ice")
+
 Ice.updateModules()
 import CTA
 
 # open the fits file
-hdulist_conf = pyfits.open('./PROD2_telconfig.fits.gz')
+hdulist_conf = pyfits.open(confdir+"PROD2_telconfig.fits.gz")
 datal0_conf = hdulist_conf[1].data
 colsl0_conf = hdulist_conf[1].columns
 namesl0_field = colsl0_conf.names
@@ -373,4 +377,4 @@ class ChacoViewer(HasTraits, Ice.Application):
 
 if __name__ == "__main__":
     viewer = ChacoViewer()
-    sys.exit(viewer.main(sys.argv, "config.server"))
+    sys.exit(viewer.main(sys.argv))
