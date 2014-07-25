@@ -1,0 +1,8 @@
+2014-07-25 Andrea Zoli <zoli@iasfbo.inaf.it>
+TAG v1.0.1
+* Add make install.
+* Looking for slice files from $CTARTA.
+* Add README.
+* Using update() data instead of root. Removed ROOT dependency.
+* Some refactor.
+* Initial commit.
